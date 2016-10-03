@@ -60,8 +60,8 @@ class MetaData(object):
         for entity_set in entity_sets + subclasses:
             schema = entity_set['schema']
             collection_name = entity_set['name']
-
             entity_name = schema['name']
+            entity_created = False
 
             if schema.get('base_type'):
                 base_type = schema.get('base_type')
@@ -71,13 +71,21 @@ class MetaData(object):
                             __odata_schema__ = schema
                             __odata_type__ = schema['type']
                         Entity.__name__ = schema['name']
+                        entity_created = True
             else:
                 class Entity(base_class):
                     __odata_schema__ = schema
                     __odata_type__ = schema['type']
                     __odata_collection__ = collection_name
-
                 Entity.__name__ = entity_name
+                entity_created = True
+
+            if not entity_created:
+                class Entity(base_class):
+                    __odata_schema__ = schema
+                    __odata_type__ = schema['type']
+                    __odata_collection__ = collection_name
+                Entity.__name__ = schema['name']
 
             for prop in schema.get('properties'):
                 prop_name = prop['name']
@@ -91,8 +99,7 @@ class MetaData(object):
                     'primary_key': prop['is_primary_key']
                 }
                 setattr(Entity, prop_name, type_(prop_name, **type_options))
-
-            entities[entity_name] = Entity
+            entities[Entity.__odata_collection__] = Entity
 
         # Set up relationships
         for entity in entities.values():
