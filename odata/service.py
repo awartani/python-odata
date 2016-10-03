@@ -153,7 +153,7 @@ class ODataService(object):
 
         self.log.info(u'Updating existing entity: {0}'.format(entity))
 
-        url = es.instance_url
+        url = es.instance_url.replace("'", "")
 
         saved_data = self.connection.execute_patch(url, patch_data)
         es.reset()
