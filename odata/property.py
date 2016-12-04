@@ -301,3 +301,10 @@ class UUIDProperty(StringProperty):
 
     def escape_value(self, value):
         return str(value)
+
+    def __eq__(self, other):
+        if(isinstance(other, StringProperty)):
+            key = other.name
+        else:
+            key = other
+        return u'{0} eq {1}'.format(key, self.name)
