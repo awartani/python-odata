@@ -153,9 +153,9 @@ class ODataService(object):
 
         self.log.info(u'Updating existing entity: {0}'.format(entity))
 
-        url = es.instance_url.replace("'", "")
+        url = es.instance_url
 
-        saved_data = self.connection.execute_patch(url, patch_data)
+        saved_data = self.connection.execute_patch(es.instance_url, patch_data)
         es.reset()
 
         if saved_data is None and force_refresh:
