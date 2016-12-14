@@ -117,8 +117,18 @@ class MetaData(object):
                 else:
                     search_type = type_
 
+                # this code was written to solve the inconstant type name between Navigation type and Entity type
+                # "mscm.account" == "Microsoft.Dynamics.CRM.account"
+                stripped_search_type = search_type.split(".").pop()
+
                 for _search_entity in entities.values():
-                    if _search_entity.__odata_schema__['type'] == search_type:
+                    nav_property_type = _search_entity.__odata_schema__['type']
+
+                    # this code was written to solve the inconstant type name between Navigation type and Entity type
+                    # "mscm.account" == "Microsoft.Dynamics.CRM.account"
+                    stripped_nav_property_type = nav_property_type.split(".").pop()
+
+                    if stripped_nav_property_type == stripped_search_type:
                         nav = NavigationProperty(
                             name,
                             _search_entity,
