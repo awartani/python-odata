@@ -41,6 +41,7 @@ class MetaData(object):
         self.url = service.url + '$metadata/'
         self.connection = service.default_context.connection
         self.service = service
+        self.metadata_local_file_path = None
 
     def property_type_to_python(self, edm_type):
         return self.property_types.get(edm_type, StringProperty)
@@ -218,10 +219,19 @@ class MetaData(object):
         self.log.info('Loaded {0} entity sets, total {1} types'.format(len(entities), len(all_types)))
         return base_class, entities, all_types
 
+    def read_metadata_from_file(self, file_path):
+        self.metadata_local_file_path = file_path
+
     def load_document(self):
-        self.log.info('Loading metadata document: {0}'.format(self.url))
-        response = self.connection._do_get(self.url)
-        return ET.fromstring(response.content)
+        if self.metadata_local_file_path:
+            self.log.info('Reading metadata document: {0}'.format(self.metadata_local_file_path))
+            with open(self.metadata_local_file_path, 'r') as metadata_file:
+                content = metadata_file.read()
+                return ET.fromstring(content)
+        else:
+            self.log.info('Loading metadata document: {0}'.format(self.url))
+            response = self.connection._do_get(self.url)
+            return ET.fromstring(response.content)
 
     def _parse_action(self, xmlq, action_element, schema_name):
         action = {
