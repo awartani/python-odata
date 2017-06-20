@@ -76,7 +76,7 @@ class ODataService(object):
     :param auth: Custom Requests auth object to use for credentials
     :raises ODataConnectionError: Fetching metadata failed. Server returned an HTTP error code
     """
-    def __init__(self, url, base=None, reflect_entities=False, session=None, auth=None):
+    def __init__(self, url, base=None, reflect_entities=False, session=None, auth=None, metadata_local_file_path=None):
         self.url = url
         self.metadata_url = ''
         self.collections = {}
@@ -115,7 +115,7 @@ class ODataService(object):
         :type types: dict
         """
 
-        self.metadata = MetaData(self)
+        self.metadata = MetaData(self, metadata_local_file_path)
         self.Base = base or declarative_base()
         """
         Entity base class. Either a custom one given in init or a generated one. Can be used to define entities
